@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SQLiteInformationAssistant</string>
+    <string name="done_button_text">DONE</string>
+    <string name="prev_button_text">DATABASES</string>
+    <string name="dbinfo">Database Information for Database %1$s</string>
+    <string name="tblinfo">Table Information for table %1$s in Database %2$s</string>
+    <string name="colinfo">Column Information for Column %1$s in Table %2$s in Database %3$s</string>
+    <string name="dblist">Databases</string>
+    <string name="tbllist">Tables in Database %1$s</string>
+    <string name="collist">Columns in Table %1$s</string>
+</resources>
