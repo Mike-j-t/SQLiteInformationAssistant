@@ -3,7 +3,8 @@
     android:id="@+id/dbv_entire_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
     <LinearLayout
         android:id="@+id/dbv_heading_layout"
         android:orientation="horizontal"
@@ -15,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_weight="4"
             android:layout_height="wrap_content"
-            android:text="MyTitle"/>
+            />
         <Button
             android:id="@+id/dbv_donebutton"
             style="@style/buttons"
@@ -28,6 +29,7 @@
     </LinearLayout>
     <LinearLayout
         android:id="@+id/dbv_workarea_layout"
+        android:baselineAligned="false"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="90"
@@ -40,19 +42,23 @@
             android:layout_width="0dp"
             android:layout_weight="10"
             android:layout_height="match_parent"
-            android:background="#FF99FF99">
+            android:background="#FF99FF99"
+            >
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                >
                 <TextView
                     android:id="@+id/dbv_left_listview_heading"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    />
                 <ListView
                     android:id="@+id/dbv_left_listview"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    >
                 </ListView>
             </LinearLayout>
         </LinearLayout>
@@ -67,15 +73,18 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                >
                 <TextView
                     android:id="@+id/dbv_right_listview_heading"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    />
                 <ListView
                     android:id="@+id/dbv_right_listview"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    >
                 </ListView>
             </LinearLayout>
         </LinearLayout>
@@ -84,20 +93,21 @@
         android:id="@+id/dbv_bottom_listview_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFAAFFFF"/>
-
+        android:background="#FFAAFFFF"
+        />
     <LinearLayout
         android:id="@+id/footer_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="50"
         android:background="#FFAAFFFF"
-        android:orientation="horizontal">
-
+        android:orientation="horizontal"
+        >
         <ListView
             android:id="@+id/dbv_bottom_listview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
         </ListView>
     </LinearLayout>
 </LinearLayout>

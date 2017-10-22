@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import mjt.sqliteinformationassistant.SQLiteInformationAssistant;
 
@@ -29,13 +31,22 @@ public class ShowCase extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_case);
 
+        // Setup the button so a click starts SIA
+        final Button tryitout = (Button) this.findViewById(R.id.tryitoutbutton);
+        tryitout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tryitout();
+            }
+        });
+
+
         // Prepare some test databases
         createDataBases();
-        // Note!
-        // Alternative constructor with 2nd parameter as true will write
-        // database information to the log
-        SQLiteInformationAssistant SIA = new SQLiteInformationAssistant(this);
-        SIA.show();     // show method invokes the SQLiteViewer activity
+    }
+
+    private void tryitout() {
+        // just use it without any customisation (not that there is any yet)
         new SQLiteInformationAssistant(this).show();
     }
 

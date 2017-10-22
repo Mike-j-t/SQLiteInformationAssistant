@@ -1,6 +1,7 @@
 package mjt.sqliteinformationassistant;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -308,14 +308,30 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         // Set the respective listener
         selected_listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(mContext,
-                        "You long clicked table" +
-                                mDatabases
-                                        .get(mCurrentDatabase)
-                                        .getTableList()
-                                        .get(position)
-                                        .getTableName(),
-                        Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(mContext,SQLiteDataViewer.class);
+                intent.putExtra(
+                        SQLiteDataViewer.INTENTKEY_DATABASEPATH,
+                        mDatabases
+                                .get(mCurrentDatabase)
+                                .getPath()
+                );
+                intent.putExtra(
+                        SQLiteDataViewer.INTENTKEY_DATABASENAME,
+                        mDatabases
+                                .get(mCurrentDatabase)
+                                .getname()
+                );
+                intent.putExtra(
+                        SQLiteDataViewer.INTENTKEY_TABLENAME,
+                        mDatabases
+                                .get(mCurrentDatabase)
+                                .getTableList()
+                                .get(position)
+                                .getTableName()
+                );
+                startActivityForResult(intent,
+                        SQLiteDataViewer.REQUESTCODE_SQLITEDATAVIEWER
+                );
                 return true;
             }
         });
