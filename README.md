@@ -51,3 +51,18 @@ Databases listed in the LeftView, Tables, initially for the first Database, list
 When a Table in the RightView is clicked, the **LeftView** displays the **Tables**0 and the **RightView** displays the **Columns** for the selected table. Additionally, the **LowerView** displays the **Table's detailed information** as per
 
 ![Table and Columns Display](https://user-images.githubusercontent.com/19511980/31858653-befcb3a2-b748-11e7-9708-e40a7ff47773.JPG)
+
+#### 3. Tables and Columns with Column Information in the LowerView
+
+Clicking on a Column will display that's Column's detailed information (clicking a Table will show the Table's), as per
+
+![Table and Columns Display with Column Information](https://user-images.githubusercontent.com/19511980/31858687-b636cd88-b749-11e7-933c-f8c122dcf263.JPG)
+
+### Note!
+
+The **DATABASES** button appears in the latter two screenshots (i.e. the Tables and Columns Display), clicking this will return to the Databases and Tables display.
+
+----
+#### More to come --
+
+
