@@ -36,3 +36,8 @@ Not as yet implemented.
 Long Clicking a Table in the list will invoke another activity that will display the data in the table.
 
 
+### Example Screens
+
+#### Initial Display with Databases listed in the LeftView, Tables, initially for the first Database, listed in the RightView and Database information (scroll through the list) in the LowerView :- 
+
+https://user-images.githubusercontent.com/19511980/31858532-c611f862-b745-11e7-93ff-a1cd75b1fc27.JPG
