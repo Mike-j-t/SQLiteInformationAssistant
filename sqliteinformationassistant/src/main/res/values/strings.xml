@@ -8,4 +8,5 @@
     <string name="dblist">Databases</string>
     <string name="tbllist">Tables in Database %1$s</string>
     <string name="collist">Columns in Table %1$s</string>
+    <string name="dataviewheading">Database is %1$s, Table is %2$s</string>
 </resources>
