@@ -38,6 +38,16 @@ Long Clicking a Table in the list will invoke another activity that will display
 
 ### Example Screens
 
-#### Initial Display with Databases listed in the LeftView, Tables, initially for the first Database, listed in the RightView and Database information (scroll through the list) in the LowerView :- 
+#### 1. Initial Display with:-
 
-https://user-images.githubusercontent.com/19511980/31858532-c611f862-b745-11e7-93ff-a1cd75b1fc27.JPG
+Databases listed in the LeftView, Tables, initially for the first Database, listed in the RightView and Database information (scrolling can be used to traverse the extensive information available) in the LowerView :- 
+
+![Initial Display](https://user-images.githubusercontent.com/19511980/31858532-c611f862-b745-11e7-93ff-a1cd75b1fc27.JPG)
+
+*Note! rather than show the tables in an empty database, the second database was selected before the screen shot was taken. P.S. an empty database will have the **android_metadata** table*
+
+#### 2. Tables and Columns Display
+
+When a Table in the RightView is clicked, the **LeftView** displays the **Tables**0 and the **RightView** displays the **Columns** for the selected table. Additionally, the **LowerView** displays the **Table's detailed information** as per
+
+![Table and Columns Display](https://user-images.githubusercontent.com/19511980/31858653-befcb3a2-b748-11e7-9708-e40a7ff47773.JPG)
