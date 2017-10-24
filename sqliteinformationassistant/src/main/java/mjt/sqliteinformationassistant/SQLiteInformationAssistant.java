@@ -272,7 +272,7 @@ public class SQLiteInformationAssistant {
      *                  note returned string will be up to twice as long
      * @return          The byte array represented as a hexadecimal string
      */
-    private static String getBytedata(byte[] bytes, @SuppressWarnings("SameParameterValue") int limit) {
+    public static String getBytedata(byte[] bytes, int limit) {
         if (bytes.length < limit) {
             return convertBytesToHex(bytes);
         } else {
