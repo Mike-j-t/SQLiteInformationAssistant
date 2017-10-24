@@ -81,7 +81,8 @@ public class SQLiteDataViewerCursorAdapter extends CursorAdapter {
                         break;
                     case Cursor.FIELD_TYPE_BLOB:
                         mTextViewList[i].setText(
-                                "BLOB - unsupported"
+                                SQLiteInformationAssistant
+                                        .getBytedata(csr.getBlob(i),24)
                         );
                         break;
                     default:
