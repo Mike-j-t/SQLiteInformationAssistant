@@ -1,7 +1,6 @@
 package mjt.sqliteinfoassistant;
 
 import android.content.ContentValues;
-import android.content.ReceiverCallNotAllowedException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 import mjt.sqliteinformationassistant.SQLiteInformationAssistant;
@@ -30,7 +28,7 @@ public class ShowCase extends AppCompatActivity {
             "0.0.0.0",
             "<<<<<<<<>>>>>>>>"
     };
-    public static ArrayList<byte[]> insertblobdata = new ArrayList<byte[]>();
+    public static ArrayList<byte[]> insertblobdata = new ArrayList<>();
     Random rnd = new Random(System.currentTimeMillis());
 
 
@@ -55,7 +53,27 @@ public class ShowCase extends AppCompatActivity {
 
     private void tryitout() {
         // just use it without any customisation (not that there is any yet)
-        new SQLiteInformationAssistant(this).show();
+        SQLiteInformationAssistant SIA = new SQLiteInformationAssistant(this);
+        //SIA.setBaseBackgroundColour(0xFFFF00FF);
+        SIA.setHeadingTextColour(0xFF999999);
+        SIA.setDatabaseListHeadingTextColour(0xFF00FFFF);
+        SIA.setTableListHeadingTextColour(0xFF0077FF);
+        SIA.setColumnListHeadingTextColour(0xFF77FF00);
+        SIA.setDatabaseListTextColour(0xFFFFFFFF);
+        SIA.setDatabaseInfoTextColour(0xFFFF0000);
+        SIA.setTableListTextColour(0xFFFF00FF);
+        SIA.setTableInfoTextcolour(0xFF0000FF);
+        SIA.setColumnListTextColour(0xFFFFFF00);
+        SIA.setColumnInfoTextColour(0xFF000000);
+        //SIA.setStringCellBackgroundColour(0xFFEEEEEE);
+        //SIA.setStringCellTextColour(0xFF0000FF);
+        //SIA.setIntegerCellBackgroundColour(0xFFFF0000);
+        //SIA.setIntegerCelltextColour(0XFFFFFFFF);
+        //SIA.setDoubleCellBackgroundColour(0xFF00FFFF);
+        //SIA.setDoubleCelltextColour(0XFF5555FF);
+        //SIA.setBlobCellBackgroundColour(0xFF44FF55);
+        //SIA.setBlobCelltextColour(0xFFFFFF00);
+        SIA.show();
     }
 
     private void createDataBases() {

@@ -9,4 +9,12 @@
     <string name="tbllist">Tables in Database %1$s</string>
     <string name="collist">Columns in Table %1$s</string>
     <string name="dataviewheading">Database is %1$s, Table is %2$s</string>
+    <string name="unsupportedcolumntype">Unsupported Column Type</string>
+    <string name="legend">Legend</string>
+    <string name="integer">INTEGER</string>
+    <string name="text">TEXT</string>
+    <string name="real">REAL</string>
+    <string name="blob">BLOB</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="nullvalue">NULL</string>
 </resources>

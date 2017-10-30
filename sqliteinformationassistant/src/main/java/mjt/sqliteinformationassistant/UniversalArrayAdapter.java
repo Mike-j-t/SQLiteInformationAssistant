@@ -44,7 +44,7 @@ class UniversalArrayAdapter extends ArrayAdapter<Object> {
      *                                  NOTE there must be at least 1 pair;
      *                                  Exceptions if either NOTE is contravened.
      */
-    private UniversalArrayAdapter(Activity calling_activity,
+    public UniversalArrayAdapter(Activity calling_activity,
                                   int base_layout_resource_id,   // ID (int) of layout
                                   List objectlist,  // List of Objects e.g. ArrayList<object>
                                   int item_layout_resource_id,   // ID (int) of Item layout
