@@ -1,12 +1,17 @@
 package mjt.sqliteinformationassistant;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.Locale;
+import static mjt.sqliteinformationassistant.SQLiteInformationAssistant.*;
 
 /**
  * Custom Cursor Adapter
@@ -15,7 +20,19 @@ import android.widget.TextView;
 public class SQLiteDataViewerCursorAdapter extends CursorAdapter {
 
     Context mContext;
-    int mMaxColumns = 15;
+    Locale mCurrentLocale;
+    int mMaxColumns = 15,
+            mTextBackgroundColour,
+            mIntegerBackgroundColour,
+            mRealBackGroundColour,
+            mBlobBackgroundColour,
+            mUnknownBackgroundColour,
+            mTextTextColour,
+            mIntegerTextColour,
+            mRealTextColour,
+            mBlobTextColour,
+            mUnknownTextColour,
+            mBytesToShowInBlob;
     int[] mMaxStrlengths;
     TextView[] mTextViewList = new TextView[mMaxColumns];
     int[] mTextViewIDList = new int[]{
@@ -25,28 +42,39 @@ public class SQLiteDataViewerCursorAdapter extends CursorAdapter {
             R.id.ddv_text13, R.id.ddv_text14, R.id.ddv_text15
     };
 
-    SQLiteDataViewerCursorAdapter (Context context, Cursor csr, int flags) {
+    SQLiteDataViewerCursorAdapter (Context context, Cursor csr, int flags, Intent intent, int bytestoshowinblob) {
         super(context, csr, flags);
         mContext = context;
+        mBytesToShowInBlob = bytestoshowinblob;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mCurrentLocale = mContext.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            mCurrentLocale = mContext.getResources().getConfiguration().locale;
+        }
         if (csr.getColumnCount() < mMaxColumns ) {
             mMaxColumns = csr.getColumnCount();
             mTextViewList = new TextView[mMaxColumns];
         }
+        mTextBackgroundColour = intent.getIntExtra(INTENTKEY_STRINGCELL_BCKGRNDCOLOUR, R.color.default_string_cell);
+        mIntegerBackgroundColour = intent.getIntExtra(INTENTKEY_INTEGERCELL_BCKGRNDCOLOUR, R.color.default_integer_cell);
+        mRealBackGroundColour = intent.getIntExtra(INTENTKEY_DOUBLECELL_BCKGRNDCOLOUR, R.color.default_double_cell);
+        mBlobBackgroundColour = intent.getIntExtra(INTENTKEY_BLOBCELL_BCKGRNDCOLOUR, R.color.default_blob_cell);
+        mUnknownBackgroundColour = intent.getIntExtra(INTENTKEY_UNKNOWNCELL_BCKGRNDCOLOUR,R.color.default_unknown_cell);
+        mTextTextColour = intent.getIntExtra(INTENTKEY_STRINGCELL_TEXTCOLOUR,R.color.default_text_color);
+        mIntegerTextColour = intent.getIntExtra(INTENTKEY_INTEGERCELL_TEXTCOLOUR,R.color.default_text_color);
+        mRealTextColour = intent.getIntExtra(INTENTKEY_DOUBLECELL_TEXTCOLOUR, R.color.default_text_color);
+        mBlobTextColour = intent.getIntExtra(INTENTKEY_BLOBCELL_TEXTCOLOUR, R.color.default_text_color);
+        mUnknownTextColour = intent.getIntExtra(INTENTKEY_UNKNOWNCELL_TEXTCOLOUR, R.color.default_text_color);
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        view = initView(view,cursor);
+        initView(view,cursor);
     }
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         view = super.getView(position, view, parent);
-        if (position % 2 == 0) {
-            view.setBackgroundColor(0x558888FF); //TODO should not hard code colour
-        } else {
-            view.setBackgroundColor(0x338888FF); //TODO should not hard code colour
-        }
         return view;
     }
 
@@ -65,30 +93,51 @@ public class SQLiteDataViewerCursorAdapter extends CursorAdapter {
                 switch (csr.getType(i)) {
                     case Cursor.FIELD_TYPE_STRING:
                         mTextViewList[i].setText(csr.getString(i));
+                        mTextViewList[i].setBackgroundColor(mTextBackgroundColour);
+                        mTextViewList[i].setTextColor(mTextTextColour);
                         break;
                     case Cursor.FIELD_TYPE_INTEGER:
                         mTextViewList[i].setText(
-                                Long.toString(csr.getLong(i))
+                                String.format(
+                                    mCurrentLocale,
+                                    "%1$d",
+                                    csr.getLong(i)
+                                )
                         );
+                        mTextViewList[i].setBackgroundColor(mIntegerBackgroundColour);
+                        mTextViewList[i].setTextColor(mIntegerTextColour);
                         break;
                     case Cursor.FIELD_TYPE_FLOAT:
                         mTextViewList[i].setText(
-                                Double.toString(csr.getDouble(i))
+                                String.format(
+                                        mCurrentLocale,
+                                        "%1$f",
+                                        csr.getDouble(i)
+                                )
                         );
+                        mTextViewList[i].setBackgroundColor(mRealBackGroundColour);
+                        mTextViewList[i].setTextColor(mRealTextColour);
                         break;
                     case Cursor.FIELD_TYPE_NULL:
-                        mTextViewList[i].setText("");
+                        mTextViewList[i].setText(
+                                mContext.getResources().getString(R.string.nullvalue));
+                        mTextViewList[i].setBackgroundColor(mUnknownBackgroundColour);
+                        mTextViewList[i].setTextColor(mUnknownTextColour);
                         break;
                     case Cursor.FIELD_TYPE_BLOB:
                         mTextViewList[i].setText(
                                 SQLiteInformationAssistant
-                                        .getBytedata(csr.getBlob(i),24)
+                                        .getBytedata(csr.getBlob(i),mBytesToShowInBlob)
                         );
+                        mTextViewList[i].setBackgroundColor(mBlobBackgroundColour);
+                        mTextViewList[i].setTextColor(mBlobTextColour);
                         break;
                     default:
                         mTextViewList[i].setText(
-                                "Unknown/Unsupported Colum Type"
+                                mContext.getResources().getString(R.string.unsupportedcolumntype)
                         );
+                        mTextViewList[i].setBackgroundColor(mUnknownBackgroundColour);
+                        mTextViewList[i].setTextColor(mUnknownBackgroundColour);
                         break;
                 }
             }

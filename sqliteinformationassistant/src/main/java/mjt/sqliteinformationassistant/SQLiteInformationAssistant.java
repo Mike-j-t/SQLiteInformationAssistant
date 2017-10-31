@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.io.File;
@@ -20,8 +21,95 @@ import static mjt.sqliteinformationassistant.SQLiteMasterConstants.*;
 public class SQLiteInformationAssistant {
 
     private static final String LOGTAG = "SQLITEDBINFO";
+    public static final String INTENTKEY_BASE_BCKGRNDCOLOUR =
+            "ik_base_bckgrndclolour";
+    public static final String INTENTKEY_DATABASELIST_BCKGRNDCOLOUR =
+            "ik_dblist_bckgrndcolour";
+    public static final String INTENTKEY_DATABASELIST_HEADINGTEXTCOLOUR =
+            "ik_dblist_headingtextcolour";
+    public static final String INTENTKEY_DATABASELIST_TEXTCOLOUR =
+            "ik_dblist_textcolour";
+    public static final String INTENTKEY_TABLELIST_BCKGRNDCOLOUR =
+            "ik_tblist_bckgrndcolour";
+    public static final String INTENTKEY_TABLELIST_HEADINGTEXTCOLOUR =
+            "ik_tblist_headingtextcolour";
+    public static final String INTENTKEY_TABLELIST_TEXTCOLOUR =
+            "ik_tblist_textcolour";
+    public static final String INTENTKEY_COLUMNLIST_BCKGRNDCOLOUR =
+            "ik_clist_bckgrndcolour";
+    public static final String INTENTKEY_COLUMNLIST_HEADINGTEXTCOLOUR =
+            "ik_clist_headingtextcolour";
+    public static final String INTENTKEY_COLUMNLIST_TEXTCOLOUR =
+            "ik_clist_textcolour";
+    public static final String INTENTKEY_DATABASEINFO_BCKGRNDCOLOUR =
+            "ik_dbinfo_bckgrndcolour";
+    public static final String INTENTKEY_DATABASEINFO_TEXTCOLOUR =
+            "ik_dbinfo_textcolour";
+    public static final String INTENTKEY_TABLEINFO_BCKGRNDCOLOUR =
+            "ik_tbinfo_bckgrndcolour";
+    public static final String INTENTKEY_TABLEINFO_TEXTCOLOUR =
+            "ik+tblist_textcolour";
+    public static final String INTENTKEY_COLUMNINFO_BCKGRNDCOLOUR =
+            "ik_cinfo_bckgrndcolour";
+    public static final String INTENTKEY_COLUMNINFO_TEXTCOLOUR =
+            "ik_cinfo_textcolour";
+    public static final String INTENKEY_HEADINGTEXTCCOLOUR =
+            "ik_headingtextcolour";
+    public static final String INTENTKEY_STRINGCELL_BCKGRNDCOLOUR =
+            "ik_stringcell_bckgrndcolour";
+    public static final String INTENTKEY_STRINGCELL_TEXTCOLOUR =
+            "ik_stringcell_textcolour";
+    public static final String INTENTKEY_INTEGERCELL_BCKGRNDCOLOUR =
+            "ik_integercell_bckgrndcolour";
+    public static final String INTENTKEY_INTEGERCELL_TEXTCOLOUR =
+            "ik_inetegercell_textcolour";
+    public static final String INTENTKEY_DOUBLECELL_BCKGRNDCOLOUR =
+            "ik_doublecell_bckgrndcolour";
+    public static final String INTENTKEY_DOUBLECELL_TEXTCOLOUR =
+            "ik_doublecell_textcolour";
+    public static final String INTENTKEY_BLOBCELL_BCKGRNDCOLOUR =
+            "ik_blobcell_bckgrndcolour";
+    public static final String INTENTKEY_BLOBCELL_TEXTCOLOUR =
+            "ik_blobcell_textcolour";
+    public static final String INTENTKEY_UNKNOWNCELL_BCKGRNDCOLOUR =
+            "ik_unknowncell_bckgrndcolour";
+    public static final String INTENTKEY_UNKNOWNCELL_TEXTCOLOUR =
+            "ik_unknowncell_textcolour";
+    public static final String INTENTKEY_BYTESTOSHOWINBLOB =
+            "ik_bytestoshowinblob";
+    public static final int DEFAULT_BYTES_TO_SHOW_IN_BLOB = 24;
 
-    final Context mContext;
+
+
+    Context mContext;
+    int mBaseBackgroundColour,
+            mHeadingTextColour,
+            mDatabaseListBackgroundColour,
+            mDatabaseListHeadingTextCColour,
+            mDatabaseListTextColour,
+            mDatabaseInfoBackgroundColour,
+            mDatabaseInfoTextColour,
+            mTableListBackgroundColour,
+            mTableListHeadingTextColour,
+            mTableListTextColour,
+            mTableInfoBackgroundColour,
+            mTableInfoTextColour,
+            mColumnListBackgroundColour,
+            mColumnListHeadingTextColour,
+            mColumnListTextColour,
+            mColumnInfoBackgroundColour,
+            mColumnInfoTextColour,
+            mStringCellBackgroundColour,
+            mIntegerCellBackgroundColour,
+            mDoubleCellBackgroundColour,
+            mBlobCellBackgroundColour,
+            mUnknownBackgroundCellColour,
+            mStringCellTextColour,
+            mIntegerCelltextColour,
+            mDoubleCelltextColour,
+            mBlobCelltextColour,
+            mUnkownCelltextColour,
+            mBytesToShowInBlob;
 
     /**
      * Constructor (short form) for an SQLiteInformationAssistant instance;
@@ -31,6 +119,7 @@ public class SQLiteInformationAssistant {
      *                  SQLiteDatabase access.
      */
     public SQLiteInformationAssistant(Context context) {
+
         this(context,false);
     }
 
@@ -46,6 +135,62 @@ public class SQLiteInformationAssistant {
     public SQLiteInformationAssistant(Context context, boolean logmode) {
 
         this.mContext = context;
+        this.mBytesToShowInBlob = DEFAULT_BYTES_TO_SHOW_IN_BLOB;
+        // Set Default Display Colours as per color resources
+        // Base colours
+        mBaseBackgroundColour = ContextCompat.getColor(
+                mContext,
+                R.color.default_basebackground
+        );
+        mHeadingTextColour =
+                ContextCompat.getColor(mContext,R.color.default_text_color);
+        // Database dispay colours
+        mDatabaseListBackgroundColour = ContextCompat.getColor(
+                mContext,
+                R.color.default_database_colour
+        );
+        mDatabaseListHeadingTextCColour = mHeadingTextColour;
+        mDatabaseListTextColour = mHeadingTextColour;
+        mDatabaseInfoBackgroundColour = mDatabaseListBackgroundColour;
+        mDatabaseInfoTextColour = mHeadingTextColour;
+
+        // Table display colours
+        mTableListBackgroundColour = ContextCompat.getColor(
+                mContext,
+                R.color.default_table_colour
+        );
+        mTableListHeadingTextColour = mHeadingTextColour;
+        mTableListTextColour = mHeadingTextColour;
+        mTableInfoBackgroundColour = mTableListBackgroundColour;
+        mTableInfoTextColour = mHeadingTextColour;
+
+        // Column Display colours
+        mColumnListBackgroundColour = ContextCompat.getColor(
+                mContext,
+                R.color.default_column_colour
+        );
+        mColumnListHeadingTextColour = mHeadingTextColour;
+        mColumnListTextColour = mHeadingTextColour;
+        mColumnInfoBackgroundColour = mColumnListBackgroundColour;
+        mColumnInfoTextColour = mHeadingTextColour;
+
+        // DataViewer Display Colours (for column types)
+        mStringCellBackgroundColour =
+                ContextCompat.getColor(mContext,R.color.default_string_cell);
+        mStringCellTextColour = mHeadingTextColour;
+        mIntegerCellBackgroundColour =
+                ContextCompat.getColor(mContext,R.color.default_integer_cell);
+        mIntegerCelltextColour = mHeadingTextColour;
+        mDoubleCellBackgroundColour =
+                ContextCompat.getColor(mContext,R.color.default_double_cell);
+        mDoubleCelltextColour = mHeadingTextColour;
+        mBlobCellBackgroundColour =
+                ContextCompat.getColor(mContext,R.color.default_blob_cell);
+        mBlobCelltextColour = mHeadingTextColour;
+        mUnknownBackgroundCellColour =
+                ContextCompat.getColor(mContext,R.color.default_unknown_cell);
+        mUnkownCelltextColour = mHeadingTextColour;
+
         // If logging Mode is on then report on databases found
         if (logmode) {
             for (DatabaseInfo di: getDatabaseList()) {
@@ -89,8 +234,126 @@ public class SQLiteInformationAssistant {
         }
     }
 
+    public void setBaseBackgroundColour(int colour) { mBaseBackgroundColour = colour; }
+    public void setHeadingTextColour(int colour) {
+        mHeadingTextColour = colour;
+    }
+    public void setDatabaseListBackgroundColour(int colour) { mDatabaseListBackgroundColour = colour;}
+    public void setDatabaseListHeadingTextColour(int colour) { mDatabaseListHeadingTextCColour = colour; }
+    public void setDatabaseListTextColour(int colour) { mDatabaseListTextColour = colour;}
+    public void setDatabaseInfoBackgroundColour(int colour) { mDatabaseInfoBackgroundColour = colour;}
+    public void setDatabaseInfoTextColour(int colour) { mDatabaseInfoTextColour = colour; }
+    public void setTableListBackgroundColour(int colour) { mTableListBackgroundColour = colour; }
+    public void setTableListHeadingTextColour(int colour) { mTableListHeadingTextColour = colour; }
+    public void setTableListTextColour(int colour) { mTableListTextColour = colour; }
+    public void setTableInfoBackgroundColour(int colour) { mTableInfoBackgroundColour = colour; }
+    public void setTableInfoTextcolour(int colour) { mTableInfoTextColour = colour; }
+    public void setColumnListBackgroundColour(int colour) { mColumnListBackgroundColour = colour; }
+    public void setColumnListHeadingTextColour(int colour) { mColumnListHeadingTextColour = colour; }
+    public void setColumnListTextColour(int colour) { mColumnListTextColour = colour; }
+    public void setColumnInfoBackgroundColour(int colour) { mColumnInfoBackgroundColour = colour; }
+    public void setColumnInfoTextColour(int colour) { mColumnInfoTextColour = colour; }
+    public void setStringCellBackgroundColour(int colour) {
+        mStringCellBackgroundColour = colour;
+    }
+    public void setStringCellTextColour(int colour) {
+        mStringCellTextColour = colour;
+    }
+    public void setIntegerCellBackgroundColour(int colour) {
+        mIntegerCellBackgroundColour = colour;
+    }
+    public void setIntegerCelltextColour(int colour) {
+        mIntegerCelltextColour = colour;
+    }
+    public void setDoubleCellBackgroundColour(int colour) {
+        mDoubleCellBackgroundColour = colour;
+    }
+    public void setDoubleCelltextColour(int colour) {
+        mDoubleCelltextColour = colour;
+    }
+    public void setBlobCellBackgroundColour(int colour) {
+        mBlobCellBackgroundColour = colour;
+    }
+    public void setBlobCelltextColour(int colour) {
+        mBlobCelltextColour = colour;
+    }
+    public void setUnknownBackgroundCellColour(int colour) {
+        mUnknownBackgroundCellColour = colour;
+    }
+    public void setUnkownCelltextColour(int colour) {
+        mUnkownCelltextColour = colour;
+    }
+    public void setBytesToShowInBlob(int bytestoshowinblob) { mBytesToShowInBlob = bytestoshowinblob; }
+
     public void show() {
         Intent intent = new Intent(mContext,SQLiteViewerActivity.class);
+
+        // Prepare to pass display colours
+        // Overall
+        intent.putExtra(INTENKEY_HEADINGTEXTCCOLOUR,
+                mHeadingTextColour);
+        intent.putExtra(INTENTKEY_BASE_BCKGRNDCOLOUR,
+                mBaseBackgroundColour);
+
+        // Database List and Info Display colours
+        intent.putExtra(INTENTKEY_DATABASELIST_BCKGRNDCOLOUR,
+                mDatabaseListBackgroundColour);
+        intent.putExtra(INTENTKEY_DATABASELIST_HEADINGTEXTCOLOUR,
+                mDatabaseListHeadingTextCColour);
+        intent.putExtra(INTENTKEY_DATABASELIST_TEXTCOLOUR,
+                mDatabaseListTextColour);
+        intent.putExtra(INTENTKEY_DATABASEINFO_BCKGRNDCOLOUR,
+                mDatabaseInfoBackgroundColour);
+        intent.putExtra(INTENTKEY_DATABASEINFO_TEXTCOLOUR,
+                mDatabaseInfoTextColour);
+
+        // Table List and Info Display colours
+        intent.putExtra(INTENTKEY_TABLELIST_BCKGRNDCOLOUR,
+                mTableListBackgroundColour);
+        intent.putExtra(INTENTKEY_TABLELIST_HEADINGTEXTCOLOUR,
+                mTableListHeadingTextColour);
+        intent.putExtra(INTENTKEY_TABLELIST_TEXTCOLOUR,
+                mTableListTextColour);
+        intent.putExtra(INTENTKEY_TABLEINFO_BCKGRNDCOLOUR,
+                mTableInfoBackgroundColour);
+        intent.putExtra(INTENTKEY_TABLEINFO_BCKGRNDCOLOUR,
+                mTableInfoTextColour);
+
+        // Column List and Info Display colours
+        intent.putExtra(INTENTKEY_COLUMNLIST_BCKGRNDCOLOUR,
+                mColumnListBackgroundColour);
+        intent.putExtra(INTENTKEY_COLUMNLIST_HEADINGTEXTCOLOUR,
+                mColumnListHeadingTextColour);
+        intent.putExtra(INTENTKEY_COLUMNLIST_TEXTCOLOUR,
+                mColumnListTextColour);
+        intent.putExtra(INTENTKEY_COLUMNINFO_BCKGRNDCOLOUR,
+                mColumnInfoBackgroundColour);
+        intent.putExtra(INTENTKEY_COLUMNINFO_TEXTCOLOUR,
+                mColumnInfoTextColour);
+
+        // Data Viewer Type colours
+        intent.putExtra(INTENTKEY_STRINGCELL_BCKGRNDCOLOUR,
+                mStringCellBackgroundColour);
+        intent.putExtra(INTENTKEY_STRINGCELL_TEXTCOLOUR,
+                mStringCellTextColour);
+        intent.putExtra(INTENTKEY_INTEGERCELL_BCKGRNDCOLOUR,
+                mIntegerCellBackgroundColour);
+        intent.putExtra(INTENTKEY_INTEGERCELL_TEXTCOLOUR,
+                mIntegerCelltextColour);
+        intent.putExtra(INTENTKEY_DOUBLECELL_BCKGRNDCOLOUR,
+                mDoubleCellBackgroundColour);
+        intent.putExtra(INTENTKEY_DOUBLECELL_TEXTCOLOUR,
+                mDoubleCelltextColour);
+        intent.putExtra(INTENTKEY_BLOBCELL_BCKGRNDCOLOUR,
+                mBlobCellBackgroundColour);
+        intent.putExtra(INTENTKEY_BLOBCELL_TEXTCOLOUR,
+                mBlobCelltextColour);
+        intent.putExtra(INTENTKEY_UNKNOWNCELL_BCKGRNDCOLOUR,
+                mUnknownBackgroundCellColour);
+        intent.putExtra(INTENTKEY_UNKNOWNCELL_TEXTCOLOUR,
+                mUnkownCelltextColour);
+        intent.putExtra(INTENTKEY_BYTESTOSHOWINBLOB,mBytesToShowInBlob);
+
         mContext.startActivity(intent);
     }
 
@@ -114,11 +377,24 @@ public class SQLiteInformationAssistant {
         return rv;
     }
 
+    /**
+     * Write the data stored in a table to the LogCat;
+     * Note! this is very much redundant as the DataViewer display data
+     * @param di    The DatabaseInfo object that owns the table
+     * @param ti    The TableInfo object for the table
+     */
     private void logTableRowData(DatabaseInfo di, TableInfo ti) {
 
-        SQLiteDatabase db = SQLiteDatabase.openDatabase(di.getPath(),null,SQLiteDatabase.OPEN_READONLY);
+        // Open the Database
+        SQLiteDatabase db =
+                SQLiteDatabase.openDatabase(
+                        di.getPath(),
+                        null,
+                        SQLiteDatabase.OPEN_READONLY
+                );
+        // Get the data from the table
         Cursor csr = getAllRowsFromTable(db,ti.getTableName(),true,null);
-        logCursorData(csr);
+        logCursorData(csr, mBytesToShowInBlob);
         csr.close();
         db.close();
     }
@@ -204,7 +480,7 @@ public class SQLiteInformationAssistant {
      * Write the contents of the Cursor to the log
      * @param csr   The Cursor that is to be displayed in the log
      */
-    public static void logCursorData(Cursor csr) {
+    public static void logCursorData(Cursor csr,int bytestoshowinblob) {
         int columncount = csr.getColumnCount();
         int rowcount = csr.getCount();
         int csrpos = csr.getPosition();
@@ -218,24 +494,26 @@ public class SQLiteInformationAssistant {
         csr.moveToPosition(-1);     //Ensure that all rows are retrieved
         while (csr.moveToNext()) {
             String unobtainable = "unobtainable!";
-            String logstr = "Information for row " + Integer.toString(csr.getPosition() + 1) + " offset=" + Integer.toString(csr.getPosition());
+            //String logstr = "Information for row " + Integer.toString(csr.getPosition() + 1) + " offset=" + Integer.toString(csr.getPosition());
+            StringBuilder logstr = new StringBuilder("Information for row " + Integer.toString(csr.getPosition() + 1) + " offset=" + Integer.toString(csr.getPosition()));
             for (int i=0; i < columncount;i++) {
-                logstr = logstr + "\n\tFor Column " + csr.getColumnName(i);
+                logstr.append("\n\tFor Column ");
+                logstr.append(csr.getColumnName(i));
                 switch (csr.getType(i)) {
                     case Cursor.FIELD_TYPE_NULL:
-                        logstr = logstr + " Type is NULL";
+                        logstr.append(" Type is NULL");
                         break;
                     case Cursor.FIELD_TYPE_FLOAT:
-                        logstr = logstr + " Type is FLOAT";
+                        logstr.append(" Type is FLOAT");
                         break;
                     case Cursor.FIELD_TYPE_INTEGER:
-                        logstr = logstr + " Type is INTEGER";
+                        logstr.append(" Type is INTEGER");
                         break;
                     case Cursor.FIELD_TYPE_STRING:
-                        logstr = logstr + " Type is STRING";
+                        logstr.append(" Type is STRING");
                         break;
                     case Cursor.FIELD_TYPE_BLOB:
-                        logstr = logstr + " Type is BLOB";
+                        logstr.append(" Type is BLOB");
                         break;
                 }
                 String strval_log = " value as String is ";
@@ -245,22 +523,25 @@ public class SQLiteInformationAssistant {
                 try {
                     strval_log = strval_log + csr.getString(i);
                     lngval_log = lngval_log + csr.getLong(i);
-                    dblval_log = dblval_log +  csr.getDouble(i);
+                    dblval_log = dblval_log + csr.getDouble(i);
                 } catch (Exception e) {
                     strval_log = strval_log + unobtainable;
                     lngval_log = lngval_log + unobtainable;
                     dblval_log = dblval_log + unobtainable;
                     try {
                         blbval_log = " value as blob is " +
-                                getBytedata(csr.getBlob(i),24);
+                                getBytedata(csr.getBlob(i), bytestoshowinblob);
                     } catch (Exception e2) {
                         e2.printStackTrace();
                     }
 
                 }
-                logstr = logstr + strval_log + lngval_log + dblval_log + blbval_log;
+                logstr.append(strval_log);
+                logstr.append(lngval_log);
+                logstr.append(dblval_log);
+                logstr.append(blbval_log);
             }
-            Log.d(LOGTAG,logstr);
+            Log.d(LOGTAG,logstr.toString());
         }
         csr.moveToPosition(csrpos); // restore cursor position
     }

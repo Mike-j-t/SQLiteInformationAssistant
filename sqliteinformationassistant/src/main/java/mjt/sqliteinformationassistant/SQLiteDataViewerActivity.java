@@ -7,10 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SQLiteDataViewer extends AppCompatActivity {
+import static mjt.sqliteinformationassistant.SQLiteInformationAssistant.*;
+
+public class SQLiteDataViewerActivity extends AppCompatActivity {
 
     // Define Intent keys for data passed from the invoking activity
     public static final String
@@ -21,9 +24,19 @@ public class SQLiteDataViewer extends AppCompatActivity {
     // Request code for returning data (not needed but..)
     public static final int REQUESTCODE_SQLITEDATAVIEWER = 11;
 
-    String mDataBasepath,mDatabaseName, mTableName;
-    TextView mHeading;
+    String mDataBasepath,
+            mDatabaseName,
+            mTableName;
+    TextView mHeading,
+            mLegendText,
+            mLegendInteger,
+            mLegendReal,
+            mLegendBlob,
+            mLegendUnknown;
     int[] mTextViewID_HeadingList;
+    int mBaseBackgroundColour,
+            mBytesToShowInBlob;
+    LinearLayout mBaseBackground;
     ListView mDataLisView;
     Button mDoneButton;
     SQLiteDataViewerCursorAdapter mSDVCA;
@@ -34,8 +47,14 @@ public class SQLiteDataViewer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sqlite_dataviewer);
 
+        mBaseBackground = (LinearLayout) this.findViewById(R.id.ddv_entire_layout);
         mHeading = (TextView) this.findViewById(R.id.ddv_heading);
         mDoneButton = (Button) this.findViewById(R.id.ddv_done);
+        mLegendText = (TextView) this.findViewById(R.id.ddv_legend_text);
+        mLegendInteger = (TextView) this.findViewById(R.id.ddv_legend_integer);
+        mLegendReal = (TextView) this.findViewById(R.id.ddv_legend_real);
+        mLegendBlob = (TextView) this.findViewById(R.id.ddv_legend_blob);
+        mLegendUnknown = (TextView) this.findViewById(R.id.ddv_legend_unknown);
 
         // get the id's for the column headings
         mTextViewID_HeadingList = new int[]{
@@ -52,6 +71,14 @@ public class SQLiteDataViewer extends AppCompatActivity {
         mDatabaseName = getIntent().getStringExtra(INTENTKEY_DATABASENAME);
         mDataBasepath = getIntent().getStringExtra(INTENTKEY_DATABASEPATH);
         mTableName = getIntent().getStringExtra(INTENTKEY_TABLENAME);
+        mBaseBackgroundColour = getIntent().getIntExtra(INTENTKEY_BASE_BCKGRNDCOLOUR,R.color.default_basebackground);
+        mLegendText.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_STRINGCELL_BCKGRNDCOLOUR,R.color.default_string_cell));
+        mLegendInteger.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_INTEGERCELL_BCKGRNDCOLOUR,R.color.default_integer_cell));
+        mLegendReal.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_DOUBLECELL_BCKGRNDCOLOUR,R.color.default_double_cell));
+        mLegendBlob.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_BLOBCELL_BCKGRNDCOLOUR,R.color.default_blob_cell));
+        mLegendUnknown.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_UNKNOWNCELL_BCKGRNDCOLOUR,R.color.default_unknown_cell));
+        mBaseBackground.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_BASE_BCKGRNDCOLOUR,R.color.default_basebackground));
+        mBytesToShowInBlob = getIntent().getIntExtra(INTENTKEY_BYTESTOSHOWINBLOB,DEFAULT_BYTES_TO_SHOW_IN_BLOB);
 
         mHeading.setText(getResources().getString(R.string.dataviewheading,mDatabaseName,mTableName));
 
@@ -90,7 +117,9 @@ public class SQLiteDataViewer extends AppCompatActivity {
         // Prepare the Custom Cursor Adapter
         mSDVCA = new SQLiteDataViewerCursorAdapter(this,
                 mCSR,
-                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER,
+                getIntent(),
+                mBytesToShowInBlob
         );
         // Attach the Adapter to the ListView
         mDataLisView.setAdapter(mSDVCA);

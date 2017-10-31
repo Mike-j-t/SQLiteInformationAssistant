@@ -2,17 +2,21 @@ package mjt.sqliteinformationassistant;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+
+import static mjt.sqliteinformationassistant.SQLiteInformationAssistant.*;
 
 public class SQLiteViewerActivity extends AppCompatActivity {
 
@@ -22,19 +26,52 @@ public class SQLiteViewerActivity extends AppCompatActivity {
     static final int SHOWTABLEINFO = 1;
     static final int SHOWCOLUMNINFO = 2;
 
+    int mHeadingTextColour,
+            mBaseBackgroundColour,
+            mDatabaseListBackgroundColour,
+            mDatabaseListHeadingTextColour,
+            mDatabaseListTextColour,
+            mDatabaseInformationListBackgroundColour,
+            mDatabaseInformationTextColour,
+            mTableListBackgroundColour,
+            mTableListHeadingTextColour,
+            mTableListTextColour,
+            mTableInformationBackgroundColour,
+            mTableInformationTextColour,
+            mColumnListHeadingTextColour,
+            mColumnListBackgroundColour,
+            mColumnListTextColour,
+            mColumnInformationBackgroundColour,
+            mColumnInformationTextColour,
+            mStringCellBackgroundColour,
+            mIntegerCellBackgroundColour,
+            mDoubleCellBackgroundColour,
+            mBlobCellBackgroundColour,
+            mUnknownBackgroundCellColour,
+            mStringCellTextColour,
+            mIntegerCelltextColour,
+            mDoubleCelltextColour,
+            mBlobCelltextColour,
+            mUnkownCelltextColour,
+            mBytesToShowInBlob;
+
     // Buttons mDone finishes activity, mPrev reverts to Database/Table List
     Button mDone, mPrev;
+    LinearLayout mEntire, mWorkarea;
     // ListViews where data is displayed
     TextView mMainheading,
             mLeftListViewHeading,
-            mRightListViewHeading, mInfoListViewheading;
-    ListView mLeftListView, mRightListView, mBottomListView;
+            mRightListViewHeading,
+            mInfoListViewheading;
+    ListView mLeftListView,
+            mRightListView,
+            mBottomListView;
     // Adapaters for the data lists
-    UniversalArrayAdapter
-            mDatabaseAdapter,   // Database List
-            mTableAdapter,      // Table List
-            mColumnAdapter,     // Column List
-            mInfoAdapter;       // list paired strings according to logic
+    SQLiteViewerCustomAdapter
+            mDatabaseAdapter,
+            mTableAdapter,
+            mColumnAdapter,
+            mInfoAdapter;
     // The database info (extracted once from actual database)
     ArrayList<DatabaseInfo> mDatabases;
     // Lists of object methods used to display the respective data
@@ -54,11 +91,16 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.mContext = this;
         setContentView(R.layout.activity_sqlite_viewer);
+        getPassedValuesFromIntent();
         // Prepare buttons
         mDone = (Button) this.findViewById(R.id.dbv_donebutton);
         prepDoneButton(mDone);
         mPrev = (Button) this.findViewById(R.id.dbv_prevbutton);
         prepPrevButton(mPrev,false);
+        mWorkarea = (LinearLayout) this.findViewById(R.id.dbv_workarea_layout);
+        mEntire = (LinearLayout) this.findViewById(R.id.dbv_entire_layout);
+        mWorkarea.setBackgroundColor(mBaseBackgroundColour);
+        mEntire.setBackgroundColor(mBaseBackgroundColour);
         // get ListViews
         mLeftListView =
                 (ListView) this.findViewById(R.id.dbv_left_listview);
@@ -68,12 +110,14 @@ public class SQLiteViewerActivity extends AppCompatActivity {
                 (ListView) this.findViewById(R.id.dbv_bottom_listview);
         // Headings
         mMainheading = (TextView) this.findViewById(R.id.dbv_heading_text);
+        mMainheading.setTextColor(mHeadingTextColour);
         mLeftListViewHeading =
                 (TextView) this.findViewById(R.id.dbv_left_listview_heading);
         mRightListViewHeading =
                 (TextView) this.findViewById(R.id.dbv_right_listview_heading);
         mInfoListViewheading =
                 (TextView) this.findViewById(R.id.dbv_bottom_listview_heading);
+        mInfoListViewheading.setTextColor(mHeadingTextColour);
 
         // Setup the method lists for the UniversalArrayAdpaters
         setMethodsLists();
@@ -85,6 +129,166 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         showDatabaseList();             // Databases Listed on Left
         showTableList(RIGHTLISTVIEW);   // Tables for first Database on right
         showInfo(SHOWDATABASEINFO);     // Detailed Database info for first
+    }
+
+    private void getPassedValuesFromIntent() {
+        mHeadingTextColour = ContextCompat.getColor(mContext,R.color.default_text_color);
+
+        Intent i = getIntent();
+        mHeadingTextColour = i.getIntExtra(
+                INTENKEY_HEADINGTEXTCCOLOUR,
+                mHeadingTextColour
+        );
+        mStringCellTextColour = mHeadingTextColour;
+        mIntegerCelltextColour = mHeadingTextColour;
+        mDoubleCelltextColour = mHeadingTextColour;
+        mBlobCelltextColour = mHeadingTextColour;
+        mUnkownCelltextColour = mHeadingTextColour;
+
+        mBaseBackgroundColour = i.getIntExtra(
+                INTENTKEY_BASE_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_basebackground
+                )
+        );
+        mDatabaseListBackgroundColour = i.getIntExtra(
+                INTENTKEY_DATABASELIST_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_database_colour
+                )
+        );
+        mDatabaseListHeadingTextColour = i.getIntExtra(
+                INTENTKEY_DATABASELIST_HEADINGTEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mDatabaseListTextColour = i.getIntExtra(
+                INTENTKEY_DATABASELIST_TEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mDatabaseInformationListBackgroundColour = i.getIntExtra(
+                INTENTKEY_DATABASEINFO_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_database_colour
+                )
+        );
+        mDatabaseInformationTextColour = i.getIntExtra(
+                INTENTKEY_DATABASEINFO_TEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mTableListBackgroundColour = i.getIntExtra(
+                INTENTKEY_TABLELIST_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_table_colour
+                )
+        );
+        mTableListHeadingTextColour = i.getIntExtra(
+                INTENTKEY_TABLELIST_HEADINGTEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mTableListTextColour = i.getIntExtra(
+                INTENTKEY_TABLELIST_TEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mTableInformationBackgroundColour = i.getIntExtra(
+                INTENTKEY_TABLEINFO_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_table_colour
+                )
+        );
+        mTableInformationTextColour = i.getIntExtra(
+                INTENTKEY_TABLEINFO_TEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mColumnListBackgroundColour = i.getIntExtra(
+                INTENTKEY_COLUMNLIST_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_column_colour
+                )
+        );
+        mColumnListTextColour = i.getIntExtra(
+                INTENTKEY_COLUMNLIST_TEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mColumnListHeadingTextColour = i.getIntExtra(
+                INTENTKEY_COLUMNLIST_HEADINGTEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mColumnInformationBackgroundColour = i.getIntExtra(
+                INTENTKEY_COLUMNINFO_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_column_colour
+                )
+        );
+        mColumnInformationTextColour = i.getIntExtra(
+                INTENTKEY_COLUMNINFO_TEXTCOLOUR,
+                mHeadingTextColour
+        );
+        mStringCellBackgroundColour = i.getIntExtra(
+                INTENTKEY_STRINGCELL_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_string_cell
+                )
+        );
+        mIntegerCellBackgroundColour = i.getIntExtra(
+                INTENTKEY_INTEGERCELL_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_integer_cell
+                )
+        );
+        mDoubleCellBackgroundColour = i.getIntExtra(
+                INTENTKEY_DOUBLECELL_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_double_cell
+                )
+        );
+        mBlobCellBackgroundColour = i.getIntExtra(
+                INTENTKEY_BLOBCELL_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_blob_cell
+                )
+        );
+        mUnknownBackgroundCellColour = i.getIntExtra(
+                INTENTKEY_UNKNOWNCELL_BCKGRNDCOLOUR,
+                ContextCompat.getColor(
+                        mContext,
+                        R.color.default_unknown_cell
+                )
+        );
+        mStringCellTextColour = i.getIntExtra(
+                INTENTKEY_STRINGCELL_TEXTCOLOUR,
+                mStringCellTextColour
+        );
+        mIntegerCelltextColour = i.getIntExtra(
+                INTENTKEY_INTEGERCELL_TEXTCOLOUR,
+                mIntegerCelltextColour
+        );
+        mDoubleCelltextColour = i.getIntExtra(
+                INTENTKEY_DOUBLECELL_TEXTCOLOUR,
+                mDoubleCelltextColour
+        );
+        mBlobCelltextColour = i.getIntExtra(
+                INTENTKEY_BLOBCELL_TEXTCOLOUR,
+                mBlobCelltextColour
+        );
+        mUnkownCelltextColour = i.getIntExtra(
+                INTENTKEY_UNKNOWNCELL_TEXTCOLOUR,
+                mUnkownCelltextColour
+        );
+        mBytesToShowInBlob = i.getIntExtra(
+                INTENTKEY_BYTESTOSHOWINBLOB,
+                DEFAULT_BYTES_TO_SHOW_IN_BLOB
+        );
     }
 
     /**
@@ -193,19 +397,19 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         // Always create and build an Array specific to the view
         // (just in case)
         ArrayList<DatabaseInfo> databaselist = new ArrayList<>();
-        for (DatabaseInfo di: mDatabases) {
-            databaselist.add(di);
-        }
+        databaselist.addAll(mDatabases);
         // Instantiate an instance of a Universal Array Adapter for the
         // Database List, if not already instantiated.
         if (mDatabaseAdapter == null) {
-            mDatabaseAdapter = new UniversalArrayAdapter(
+            mDatabaseAdapter = new SQLiteViewerCustomAdapter(
                     this,
                     android.R.layout.simple_list_item_1,
                     databaselist,
-                    android.R.layout.simple_list_item_1,
                     mDatabaseListMethods,
-                    new int[]{android.R.id.text1}
+                    new int[]{android.R.id.text1},
+                    new String[] {""},
+                    mDatabaseListBackgroundColour,
+                    mDatabaseListTextColour
             );
         } else {
             // if already instantiated the swap to new list
@@ -213,17 +417,21 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         }
         // Set the ListViews with thier respective adapters
         mLeftListView.setAdapter(mDatabaseAdapter);
+        mLeftListView.setBackgroundColor(mDatabaseListBackgroundColour);
         mRightListView.setAdapter(mTableAdapter);
         // Setup the respective item click handling
         setLeftListViewItemClickHandler(SHOWDATABASEINFO);
         setRightListViewItemClickHandler(SHOWTABLEINFO);
         mLeftListViewHeading.setText(getResources().getString(R.string.dblist));
+        mLeftListViewHeading.setBackgroundColor(mDatabaseListBackgroundColour);
         mRightListViewHeading.setText(getResources().getString(
                 R.string.tbllist,
                 mDatabases
                         .get(mCurrentDatabase)
                         .getname())
         );
+        mLeftListViewHeading.setTextColor(mDatabaseListHeadingTextColour);
+        mRightListViewHeading.setTextColor(mTableListHeadingTextColour);
     }
 
     /**
@@ -239,20 +447,22 @@ public class SQLiteViewerActivity extends AppCompatActivity {
 
         // Always rebuild the List to be used for the ListView
         ArrayList<TableInfo> tablelist = new ArrayList<>();
-        for (TableInfo ti: mDatabases.get(mCurrentDatabase).getTableList()) {
-            tablelist.add(ti);
-        }
+        tablelist.addAll(mDatabases
+                .get(mCurrentDatabase)
+                .getTableList());
 
         // Instantiate an instance of a Universal Array Adapter for the
         // Table List, if not already instantiated.
         if (mTableAdapter == null) {
-            mTableAdapter = new UniversalArrayAdapter(
+            mTableAdapter = new SQLiteViewerCustomAdapter(
                     this,
                     android.R.layout.simple_list_item_1,
                     tablelist,
-                    android.R.layout.simple_list_item_1,
                     mTableListMethods,
-                    new int[]{android.R.id.text1}
+                    new int[]{android.R.id.text1},
+                    new String[]{""},
+                    mTableListBackgroundColour,
+                    mTableListTextColour
             );
         } else {
             // If already instantiated the swap to new list
@@ -261,6 +471,9 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         // Set the respective Righ or Left view with the Table List adapter
         switch (side) {
             case RIGHTLISTVIEW:
+                mRightListView.setBackgroundColor(mTableListBackgroundColour);
+                mTableAdapter.setBackgroundColour(mTableListBackgroundColour);
+                mRightListViewHeading.setBackgroundColor(mTableListBackgroundColour);
                 mRightListView.setAdapter(mTableAdapter);
                 mRightListViewHeading.setText(getResources()
                         .getString(
@@ -269,8 +482,13 @@ public class SQLiteViewerActivity extends AppCompatActivity {
                                         .getname()
                         )
                 );
+                mRightListViewHeading.setTextColor(mTableListHeadingTextColour);
+                mLeftListViewHeading.setTextColor(mDatabaseListHeadingTextColour);
                 break;
             case LEFTLISTVIEW:
+                mLeftListView.setBackgroundColor(mTableListBackgroundColour);
+                mTableAdapter.setBackgroundColour(mTableListBackgroundColour);
+                mLeftListViewHeading.setBackgroundColor(mTableListBackgroundColour);
                 mLeftListView.setAdapter(mTableAdapter);
                 mLeftListViewHeading.setText(getResources()
                         .getString(
@@ -279,6 +497,8 @@ public class SQLiteViewerActivity extends AppCompatActivity {
                                         .getname()
                         )
                 );
+                mLeftListViewHeading.setTextColor(mTableListHeadingTextColour);
+                mRightListViewHeading.setTextColor(mColumnListHeadingTextColour);
                 break;
         }
         // Setup the TableList's Item LongClick handling
@@ -308,29 +528,41 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         // Set the respective listener
         selected_listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(mContext,SQLiteDataViewer.class);
+                Intent intent = new Intent(mContext,SQLiteDataViewerActivity.class);
                 intent.putExtra(
-                        SQLiteDataViewer.INTENTKEY_DATABASEPATH,
+                        SQLiteDataViewerActivity.INTENTKEY_DATABASEPATH,
                         mDatabases
                                 .get(mCurrentDatabase)
                                 .getPath()
                 );
                 intent.putExtra(
-                        SQLiteDataViewer.INTENTKEY_DATABASENAME,
+                        SQLiteDataViewerActivity.INTENTKEY_DATABASENAME,
                         mDatabases
                                 .get(mCurrentDatabase)
                                 .getname()
                 );
                 intent.putExtra(
-                        SQLiteDataViewer.INTENTKEY_TABLENAME,
+                        SQLiteDataViewerActivity.INTENTKEY_TABLENAME,
                         mDatabases
                                 .get(mCurrentDatabase)
                                 .getTableList()
                                 .get(position)
                                 .getTableName()
                 );
+                intent.putExtra(INTENTKEY_BASE_BCKGRNDCOLOUR,mBaseBackgroundColour);
+                intent.putExtra(INTENTKEY_STRINGCELL_BCKGRNDCOLOUR,mStringCellBackgroundColour);
+                intent.putExtra(INTENTKEY_INTEGERCELL_BCKGRNDCOLOUR,mIntegerCellBackgroundColour);
+                intent.putExtra(INTENTKEY_DOUBLECELL_BCKGRNDCOLOUR,mDoubleCellBackgroundColour);
+                intent.putExtra(INTENTKEY_BLOBCELL_BCKGRNDCOLOUR,mBlobCellBackgroundColour);
+                intent.putExtra(INTENTKEY_UNKNOWNCELL_BCKGRNDCOLOUR,mUnknownBackgroundCellColour);
+                intent.putExtra(INTENTKEY_STRINGCELL_TEXTCOLOUR,mStringCellTextColour);
+                intent.putExtra(INTENTKEY_INTEGERCELL_TEXTCOLOUR,mIntegerCelltextColour);
+                intent.putExtra(INTENTKEY_DOUBLECELL_TEXTCOLOUR,mDoubleCelltextColour);
+                intent.putExtra(INTENTKEY_BLOBCELL_TEXTCOLOUR,mBlobCelltextColour);
+                intent.putExtra(INTENTKEY_UNKNOWNCELL_TEXTCOLOUR,mUnkownCelltextColour);
+                intent.putExtra(INTENTKEY_BYTESTOSHOWINBLOB,mBytesToShowInBlob);
                 startActivityForResult(intent,
-                        SQLiteDataViewer.REQUESTCODE_SQLITEDATAVIEWER
+                        SQLiteDataViewerActivity.REQUESTCODE_SQLITEDATAVIEWER
                 );
                 return true;
             }
@@ -343,13 +575,11 @@ public class SQLiteViewerActivity extends AppCompatActivity {
     private void showColumnList() {
         // Always rebuild a list specific to the adapter
         ArrayList<ColumnInfo> columnlist = new ArrayList<>();
-        for (ColumnInfo ci: mDatabases
+        columnlist.addAll(mDatabases
                 .get(mCurrentDatabase)
                 .getTableList()
                 .get(mCurrentTable)
-                .getColumnList()) {
-            columnlist.add(ci);
-        }
+                .getColumnList());
 
         // set the Current column to the first in the list
         mCurrentColumn = 0;
@@ -357,20 +587,24 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         // Instantiate a Universal Array Adapter instance for the
         // ColumnList, if not already instantiated
         if (mColumnAdapter == null) {
-            mColumnAdapter = new UniversalArrayAdapter(
+            mColumnAdapter = new SQLiteViewerCustomAdapter(
                     this,
                     android.R.layout.simple_list_item_1,
                     columnlist,
-                    android.R.layout.simple_list_item_1,
                     mColumnListMethods,
-                    new int[]{android.R.id.text1}
+                    new int[]{android.R.id.text1},
+                    new String[]{""},
+                    mColumnListBackgroundColour,
+                    mColumnListTextColour
             );
         } else {
             // If already instantiated swap to the new ColumnList
             mColumnAdapter.swapItems(columnlist);
         }
         // Set the Right ListView to use the Column adapter
+        mRightListView.setBackgroundColor(mColumnListBackgroundColour);
         mRightListView.setAdapter(mColumnAdapter);
+        mRightListViewHeading.setBackgroundColor(mColumnListBackgroundColour);
         mRightListViewHeading.setText(getResources().getString(
                 R.string.collist,
                 mDatabases
@@ -379,6 +613,7 @@ public class SQLiteViewerActivity extends AppCompatActivity {
                         .get(mCurrentTable)
                         .getTableName()
         ));
+        mRightListViewHeading.setTextColor(mColumnListHeadingTextColour);
     }
 
     /**
@@ -395,34 +630,39 @@ public class SQLiteViewerActivity extends AppCompatActivity {
      */
     private void showInfo(int typetoshow) {
 
+        int infolisttextcolour = mHeadingTextColour;
+
         // Initialse the Adapter specific DoubleString ArrayList
         ArrayList<DoubleString> infolist = new ArrayList<>();
         switch (typetoshow) {
             // If Database detailed information then build the adpater
             // specific ArrayList from the current database
             case SHOWDATABASEINFO:
-                for (DoubleString il: mDatabases
+                infolist.addAll(mDatabases
                         .get(mCurrentDatabase)
-                        .getDBInfoAsDoubleStringArrayList()) {
-                    infolist.add(il);
-                }
+                        .getDBInfoAsDoubleStringArrayList());
                 mInfoListViewheading.setText(getResources().getString(
                         R.string.dbinfo,
                         mDatabases.get(mCurrentDatabase).getname())
                 );
+                mInfoListViewheading.setTextColor(mHeadingTextColour);
+                mBottomListView.setBackgroundColor(mDatabaseInformationListBackgroundColour);
+                mInfoListViewheading.setBackgroundColor(mDatabaseInformationListBackgroundColour);
+                if (mInfoAdapter != null) {
+                    mInfoAdapter.setBackgroundColour(mDatabaseInformationListBackgroundColour);
+                    mInfoAdapter.setTextColour(mDatabaseInformationTextColour);
+                }
+                infolisttextcolour = mDatabaseInformationTextColour;
                 break;
             // If Table detailed information then build the adpater
             // specific ArrayList from the current Table, which will
             // be owned by the current database.
             case SHOWTABLEINFO:
-                for (DoubleString il:
-                        mDatabases
+                infolist.addAll(mDatabases
                         .get(mCurrentDatabase)
                         .getTableList()
                         .get(mCurrentTable)
-                        .getTableInfoAsDoubleStringArrayList()) {
-                    infolist.add(il);
-                }
+                        .getTableInfoAsDoubleStringArrayList());
                 mInfoListViewheading.setText(getResources().getString(
                         R.string.tblinfo,
                         mDatabases
@@ -432,21 +672,27 @@ public class SQLiteViewerActivity extends AppCompatActivity {
                                 .getTableName(),
                         mDatabases.get(mCurrentDatabase).getname())
                 );
+                mInfoListViewheading.setTextColor(mHeadingTextColour);
+                mInfoListViewheading.setBackgroundColor(mTableInformationBackgroundColour);
+                mBottomListView.setBackgroundColor(mTableInformationBackgroundColour);
+                if (mInfoAdapter != null) {
+                    mInfoAdapter.setBackgroundColour(mTableInformationBackgroundColour);
+                    mInfoAdapter.setTextColour(mTableInformationTextColour);
+                }
+                infolisttextcolour = mTableInformationTextColour;
                 break;
             // If Column detailed information then build the adpater
             // specific ArrayList from the current Column, which will be
             // owned by the current table, which itself is owned by the
             // current database.
             case SHOWCOLUMNINFO:
-                for (DoubleString il: mDatabases
+                infolist.addAll(mDatabases
                         .get(mCurrentDatabase)
                         .getTableList()
                         .get(mCurrentTable)
                         .getColumnList()
                         .get(mCurrentColumn)
-                        .getColumnInfoAsDoubleString()) {
-                    infolist.add(il);
-                }
+                        .getColumnInfoAsDoubleString());
                 mInfoListViewheading.setText(getResources().getString(
                         R.string.colinfo,
                         mDatabases
@@ -465,21 +711,31 @@ public class SQLiteViewerActivity extends AppCompatActivity {
                                 .get(mCurrentDatabase)
                                 .getname())
                 );
+                mInfoListViewheading.setTextColor(mHeadingTextColour);
+                mInfoListViewheading.setBackgroundColor(mColumnInformationBackgroundColour);
+                mBottomListView.setBackgroundColor(mColumnInformationBackgroundColour);
+                if (mInfoAdapter != null) {
+                    mInfoAdapter.setBackgroundColour(mColumnInformationBackgroundColour);
+                    mInfoAdapter.setTextColour(mColumnInformationTextColour);
+                }
+                infolisttextcolour = mColumnInformationTextColour;
                 break;
         }
         // If not already instantiated, create a UniversalArrayAdapter
         // instance for detailed information
         if (mInfoAdapter == null) {
-            mInfoAdapter = new UniversalArrayAdapter(
+            mInfoAdapter = new SQLiteViewerCustomAdapter(
                     this,
                     android.R.layout.simple_list_item_2,
                     infolist,
-                    android.R.layout.simple_list_item_2,
                     mDoubleStringMethods,
                     new int[]{
                             android.R.id.text1,
                             android.R.id.text2
-                    }
+                    },
+                    new String[]{"",""},
+                    mDatabaseInformationListBackgroundColour,
+                    infolisttextcolour
             );
         } else {
             // If already instamtiated then swap to the new list

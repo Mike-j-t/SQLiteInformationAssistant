@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="default_database_colour">#FF99FF99</color>
+    <color name="default_table_colour">#FFFF9999</color>
+    <color name="default_column_colour">#FF9999FF</color>
+    <color name="default_string_cell">#FFCCFFCC</color>
+    <color name="default_integer_cell">#FFEEEEFF</color>
+    <color name="default_double_cell">#FFAAAAFF</color>
+    <color name="default_blob_cell">#FFFF9999</color>
+    <color name="default_unknown_cell">#FFFFFF99</color>
+    <color name="default_text_color">#FF333333</color>
+    <color name="default_basebackground">#FF5555FF</color>
+    <color name="black">#FF000000</color>
+</resources>
