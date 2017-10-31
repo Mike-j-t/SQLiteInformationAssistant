@@ -78,6 +78,8 @@ The **DATABASES** button appears in the latter two screenshots (i.e. the Tables 
 ----
 #### 4. Table Data View
 
+*Note! These test tables have been especially generated to have varying storage types (even though a column might be defined as a particular type SQLite allows any type of data to be stored in any column row by row [see SQLite Datatypes](https://sqlite.org/datatype3.html)*. Therefore, this is not typical, rather a typical table would have columns with a dominating type (like the first column, the **_id** column which is of type INTEGER.
+
 ![sqliteinformationassistant_tabledataviewer_v1](https://user-images.githubusercontent.com/19511980/32215600-83d32a1a-be76-11e7-96d5-0a775492efcd.JPG)
 
 
