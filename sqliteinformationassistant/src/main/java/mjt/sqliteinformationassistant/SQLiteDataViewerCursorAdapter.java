@@ -31,7 +31,8 @@ public class SQLiteDataViewerCursorAdapter extends CursorAdapter {
             mIntegerTextColour,
             mRealTextColour,
             mBlobTextColour,
-            mUnknownTextColour;
+            mUnknownTextColour,
+            mBytesToShowInBlob;
     int[] mMaxStrlengths;
     TextView[] mTextViewList = new TextView[mMaxColumns];
     int[] mTextViewIDList = new int[]{
@@ -41,9 +42,10 @@ public class SQLiteDataViewerCursorAdapter extends CursorAdapter {
             R.id.ddv_text13, R.id.ddv_text14, R.id.ddv_text15
     };
 
-    SQLiteDataViewerCursorAdapter (Context context, Cursor csr, int flags, Intent intent) {
+    SQLiteDataViewerCursorAdapter (Context context, Cursor csr, int flags, Intent intent, int bytestoshowinblob) {
         super(context, csr, flags);
         mContext = context;
+        mBytesToShowInBlob = bytestoshowinblob;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             mCurrentLocale = mContext.getResources().getConfiguration().getLocales().get(0);
         } else {
@@ -125,7 +127,7 @@ public class SQLiteDataViewerCursorAdapter extends CursorAdapter {
                     case Cursor.FIELD_TYPE_BLOB:
                         mTextViewList[i].setText(
                                 SQLiteInformationAssistant
-                                        .getBytedata(csr.getBlob(i),24)
+                                        .getBytedata(csr.getBlob(i),mBytesToShowInBlob)
                         );
                         mTextViewList[i].setBackgroundColor(mBlobBackgroundColour);
                         mTextViewList[i].setTextColor(mBlobTextColour);

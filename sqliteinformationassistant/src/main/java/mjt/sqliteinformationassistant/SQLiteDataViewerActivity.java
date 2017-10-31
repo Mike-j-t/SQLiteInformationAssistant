@@ -34,7 +34,8 @@ public class SQLiteDataViewerActivity extends AppCompatActivity {
             mLegendBlob,
             mLegendUnknown;
     int[] mTextViewID_HeadingList;
-    int mBaseBackgroundColour;
+    int mBaseBackgroundColour,
+            mBytesToShowInBlob;
     LinearLayout mBaseBackground;
     ListView mDataLisView;
     Button mDoneButton;
@@ -76,8 +77,9 @@ public class SQLiteDataViewerActivity extends AppCompatActivity {
         mLegendReal.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_DOUBLECELL_BCKGRNDCOLOUR,R.color.default_double_cell));
         mLegendBlob.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_BLOBCELL_BCKGRNDCOLOUR,R.color.default_blob_cell));
         mLegendUnknown.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_UNKNOWNCELL_BCKGRNDCOLOUR,R.color.default_unknown_cell));
-
         mBaseBackground.setBackgroundColor(getIntent().getIntExtra(INTENTKEY_BASE_BCKGRNDCOLOUR,R.color.default_basebackground));
+        mBytesToShowInBlob = getIntent().getIntExtra(INTENTKEY_BYTESTOSHOWINBLOB,DEFAULT_BYTES_TO_SHOW_IN_BLOB);
+
         mHeading.setText(getResources().getString(R.string.dataviewheading,mDatabaseName,mTableName));
 
         // Open the Database and get a cursor with an _id column
@@ -116,7 +118,8 @@ public class SQLiteDataViewerActivity extends AppCompatActivity {
         mSDVCA = new SQLiteDataViewerCursorAdapter(this,
                 mCSR,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER,
-                getIntent()
+                getIntent(),
+                mBytesToShowInBlob
         );
         // Attach the Adapter to the ListView
         mDataLisView.setAdapter(mSDVCA);

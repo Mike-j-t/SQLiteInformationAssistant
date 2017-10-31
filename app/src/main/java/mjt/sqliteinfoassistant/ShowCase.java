@@ -52,19 +52,24 @@ public class ShowCase extends AppCompatActivity {
     }
 
     private void tryitout() {
-        // just use it without any customisation (not that there is any yet)
+        // Get an SQLiteInformationAssistant instance
+        // Note! the show method invokes the Activity
         SQLiteInformationAssistant SIA = new SQLiteInformationAssistant(this);
+
+        // Instance customisation i.e set Display attributes
         //SIA.setBaseBackgroundColour(0xFFFF00FF);
         SIA.setHeadingTextColour(0xFF999999);
         SIA.setDatabaseListHeadingTextColour(0xFF00FFFF);
         SIA.setTableListHeadingTextColour(0xFF0077FF);
         SIA.setColumnListHeadingTextColour(0xFF77FF00);
+
         SIA.setDatabaseListTextColour(0xFFFFFFFF);
         SIA.setDatabaseInfoTextColour(0xFFFF0000);
         SIA.setTableListTextColour(0xFFFF00FF);
         SIA.setTableInfoTextcolour(0xFF0000FF);
         SIA.setColumnListTextColour(0xFFFFFF00);
         SIA.setColumnInfoTextColour(0xFF000000);
+
         //SIA.setStringCellBackgroundColour(0xFFEEEEEE);
         //SIA.setStringCellTextColour(0xFF0000FF);
         //SIA.setIntegerCellBackgroundColour(0xFFFF0000);
@@ -73,6 +78,8 @@ public class ShowCase extends AppCompatActivity {
         //SIA.setDoubleCelltextColour(0XFF5555FF);
         //SIA.setBlobCellBackgroundColour(0xFF44FF55);
         //SIA.setBlobCelltextColour(0xFFFFFF00);
+        // Note
+        SIA.setBytesToShowInBlob(128);
         SIA.show();
     }
 
@@ -90,9 +97,10 @@ public class ShowCase extends AppCompatActivity {
 
         for (int i =0; i < 20; i++) {
             String tblname = "testtable" + Integer.toString(i);
-            String tbl_crt_sql = "CREATE TABLE IF NOT EXISTS " + tblname +
-                    " (" +
-                    "_id INTEGER PRIMARY KEY, ";
+            StringBuilder sb = new StringBuilder(" CREATE TABLE IF NOT EXISTS "
+                    + tblname + "(" +
+                    "_id INTEGER PRIMARY KEY, "
+            );
             ContentValues cv = new ContentValues();
 
             // create columns based upon table number
@@ -100,15 +108,15 @@ public class ShowCase extends AppCompatActivity {
                 String colname = "COL_" + Integer.toString(j) + " ";
                 int typeoffset = j % coltypes.length;
                 int dataoffset = j % insertdata.length;
-                tbl_crt_sql = tbl_crt_sql + colname + coltypes[typeoffset];
+                sb.append(colname);
+                sb.append(coltypes[typeoffset]);
                 if (j != i) {
-                    tbl_crt_sql = tbl_crt_sql + ",";
+                    sb.append(",");
                 }
                 cv.put(colname,insertdata[dataoffset]);
             }
-            tbl_crt_sql = tbl_crt_sql + ")";
-            // Create the table
-            testdb001.execSQL(tbl_crt_sql);
+            sb.append(")");
+            testdb001.execSQL(sb.toString());
 
             // table created so insert some data
             int rowstoadd = rnd.nextInt(20) + 1;

@@ -75,6 +75,9 @@ public class SQLiteInformationAssistant {
             "ik_unknowncell_bckgrndcolour";
     public static final String INTENTKEY_UNKNOWNCELL_TEXTCOLOUR =
             "ik_unknowncell_textcolour";
+    public static final String INTENTKEY_BYTESTOSHOWINBLOB =
+            "ik_bytestoshowinblob";
+    public static final int DEFAULT_BYTES_TO_SHOW_IN_BLOB = 24;
 
 
 
@@ -105,7 +108,8 @@ public class SQLiteInformationAssistant {
             mIntegerCelltextColour,
             mDoubleCelltextColour,
             mBlobCelltextColour,
-            mUnkownCelltextColour;
+            mUnkownCelltextColour,
+            mBytesToShowInBlob;
 
     /**
      * Constructor (short form) for an SQLiteInformationAssistant instance;
@@ -131,6 +135,7 @@ public class SQLiteInformationAssistant {
     public SQLiteInformationAssistant(Context context, boolean logmode) {
 
         this.mContext = context;
+        this.mBytesToShowInBlob = DEFAULT_BYTES_TO_SHOW_IN_BLOB;
         // Set Default Display Colours as per color resources
         // Base colours
         mBaseBackgroundColour = ContextCompat.getColor(
@@ -185,7 +190,6 @@ public class SQLiteInformationAssistant {
         mUnknownBackgroundCellColour =
                 ContextCompat.getColor(mContext,R.color.default_unknown_cell);
         mUnkownCelltextColour = mHeadingTextColour;
-;
 
         // If logging Mode is on then report on databases found
         if (logmode) {
@@ -279,6 +283,7 @@ public class SQLiteInformationAssistant {
     public void setUnkownCelltextColour(int colour) {
         mUnkownCelltextColour = colour;
     }
+    public void setBytesToShowInBlob(int bytestoshowinblob) { mBytesToShowInBlob = bytestoshowinblob; }
 
     public void show() {
         Intent intent = new Intent(mContext,SQLiteViewerActivity.class);
@@ -347,6 +352,7 @@ public class SQLiteInformationAssistant {
                 mUnknownBackgroundCellColour);
         intent.putExtra(INTENTKEY_UNKNOWNCELL_TEXTCOLOUR,
                 mUnkownCelltextColour);
+        intent.putExtra(INTENTKEY_BYTESTOSHOWINBLOB,mBytesToShowInBlob);
 
         mContext.startActivity(intent);
     }
@@ -388,7 +394,7 @@ public class SQLiteInformationAssistant {
                 );
         // Get the data from the table
         Cursor csr = getAllRowsFromTable(db,ti.getTableName(),true,null);
-        logCursorData(csr);
+        logCursorData(csr, mBytesToShowInBlob);
         csr.close();
         db.close();
     }
@@ -474,7 +480,7 @@ public class SQLiteInformationAssistant {
      * Write the contents of the Cursor to the log
      * @param csr   The Cursor that is to be displayed in the log
      */
-    public static void logCursorData(Cursor csr) {
+    public static void logCursorData(Cursor csr,int bytestoshowinblob) {
         int columncount = csr.getColumnCount();
         int rowcount = csr.getCount();
         int csrpos = csr.getPosition();
@@ -488,24 +494,26 @@ public class SQLiteInformationAssistant {
         csr.moveToPosition(-1);     //Ensure that all rows are retrieved
         while (csr.moveToNext()) {
             String unobtainable = "unobtainable!";
-            String logstr = "Information for row " + Integer.toString(csr.getPosition() + 1) + " offset=" + Integer.toString(csr.getPosition());
+            //String logstr = "Information for row " + Integer.toString(csr.getPosition() + 1) + " offset=" + Integer.toString(csr.getPosition());
+            StringBuilder logstr = new StringBuilder("Information for row " + Integer.toString(csr.getPosition() + 1) + " offset=" + Integer.toString(csr.getPosition()));
             for (int i=0; i < columncount;i++) {
-                logstr = logstr + "\n\tFor Column " + csr.getColumnName(i);
+                logstr.append("\n\tFor Column ");
+                logstr.append(csr.getColumnName(i));
                 switch (csr.getType(i)) {
                     case Cursor.FIELD_TYPE_NULL:
-                        logstr = logstr + " Type is NULL";
+                        logstr.append(" Type is NULL");
                         break;
                     case Cursor.FIELD_TYPE_FLOAT:
-                        logstr = logstr + " Type is FLOAT";
+                        logstr.append(" Type is FLOAT");
                         break;
                     case Cursor.FIELD_TYPE_INTEGER:
-                        logstr = logstr + " Type is INTEGER";
+                        logstr.append(" Type is INTEGER");
                         break;
                     case Cursor.FIELD_TYPE_STRING:
-                        logstr = logstr + " Type is STRING";
+                        logstr.append(" Type is STRING");
                         break;
                     case Cursor.FIELD_TYPE_BLOB:
-                        logstr = logstr + " Type is BLOB";
+                        logstr.append(" Type is BLOB");
                         break;
                 }
                 String strval_log = " value as String is ";
@@ -515,22 +523,25 @@ public class SQLiteInformationAssistant {
                 try {
                     strval_log = strval_log + csr.getString(i);
                     lngval_log = lngval_log + csr.getLong(i);
-                    dblval_log = dblval_log +  csr.getDouble(i);
+                    dblval_log = dblval_log + csr.getDouble(i);
                 } catch (Exception e) {
                     strval_log = strval_log + unobtainable;
                     lngval_log = lngval_log + unobtainable;
                     dblval_log = dblval_log + unobtainable;
                     try {
                         blbval_log = " value as blob is " +
-                                getBytedata(csr.getBlob(i),24);
+                                getBytedata(csr.getBlob(i), bytestoshowinblob);
                     } catch (Exception e2) {
                         e2.printStackTrace();
                     }
 
                 }
-                logstr = logstr + strval_log + lngval_log + dblval_log + blbval_log;
+                logstr.append(strval_log);
+                logstr.append(lngval_log);
+                logstr.append(dblval_log);
+                logstr.append(blbval_log);
             }
-            Log.d(LOGTAG,logstr);
+            Log.d(LOGTAG,logstr.toString());
         }
         csr.moveToPosition(csrpos); // restore cursor position
     }

@@ -52,7 +52,8 @@ public class SQLiteViewerActivity extends AppCompatActivity {
             mIntegerCelltextColour,
             mDoubleCelltextColour,
             mBlobCelltextColour,
-            mUnkownCelltextColour;
+            mUnkownCelltextColour,
+            mBytesToShowInBlob;
 
     // Buttons mDone finishes activity, mPrev reverts to Database/Table List
     Button mDone, mPrev;
@@ -103,28 +104,20 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         // get ListViews
         mLeftListView =
                 (ListView) this.findViewById(R.id.dbv_left_listview);
-        //mLeftListView.setBackgroundColor(mleftViewBackgroundColour);
         mRightListView =
                 (ListView) this.findViewById(R.id.dbv_right_listview);
-        //mRightListView.setBackgroundColor(mRightViewBackgroundColour);
         mBottomListView =
                 (ListView) this.findViewById(R.id.dbv_bottom_listview);
-        //mBottomListView.setBackgroundColor(mBottomViewBackgroundColour);
         // Headings
         mMainheading = (TextView) this.findViewById(R.id.dbv_heading_text);
         mMainheading.setTextColor(mHeadingTextColour);
         mLeftListViewHeading =
                 (TextView) this.findViewById(R.id.dbv_left_listview_heading);
-        //mLeftListViewHeading.setTextColor(mHeadingTextColour);
-        //mLeftListViewHeading.setBackgroundColor(mleftViewBackgroundColour);
         mRightListViewHeading =
                 (TextView) this.findViewById(R.id.dbv_right_listview_heading);
-        //mRightListViewHeading.setTextColor(mHeadingTextColour);
-        //mRightListViewHeading.setBackgroundColor(mRightViewBackgroundColour);
         mInfoListViewheading =
                 (TextView) this.findViewById(R.id.dbv_bottom_listview_heading);
         mInfoListViewheading.setTextColor(mHeadingTextColour);
-        //mInfoListViewheading.setBackgroundColor(mBottomViewBackgroundColour);
 
         // Setup the method lists for the UniversalArrayAdpaters
         setMethodsLists();
@@ -291,6 +284,10 @@ public class SQLiteViewerActivity extends AppCompatActivity {
         mUnkownCelltextColour = i.getIntExtra(
                 INTENTKEY_UNKNOWNCELL_TEXTCOLOUR,
                 mUnkownCelltextColour
+        );
+        mBytesToShowInBlob = i.getIntExtra(
+                INTENTKEY_BYTESTOSHOWINBLOB,
+                DEFAULT_BYTES_TO_SHOW_IN_BLOB
         );
     }
 
@@ -563,6 +560,7 @@ public class SQLiteViewerActivity extends AppCompatActivity {
                 intent.putExtra(INTENTKEY_DOUBLECELL_TEXTCOLOUR,mDoubleCelltextColour);
                 intent.putExtra(INTENTKEY_BLOBCELL_TEXTCOLOUR,mBlobCelltextColour);
                 intent.putExtra(INTENTKEY_UNKNOWNCELL_TEXTCOLOUR,mUnkownCelltextColour);
+                intent.putExtra(INTENTKEY_BYTESTOSHOWINBLOB,mBytesToShowInBlob);
                 startActivityForResult(intent,
                         SQLiteDataViewerActivity.REQUESTCODE_SQLITEDATAVIEWER
                 );
