@@ -31,18 +31,31 @@ When Tables and Columns are listed:-
 - Clicking a **Table** will change the **RightView** to display the **Columns** of the clicked Table and also change the **LowerView** to display the detailed information relevant to the clicked table.
 - Clicking a **Column** will change the **LowerView** to display detailed information about the clicked Column.
 
-Not as yet implemented.
+Viewing Table Data
 
-Long Clicking a Table in the list will invoke another activity that will display the data in the table.
+Long Clicking a Table either in the Database and Tables view or in the Tables and Columns view :-
+
+- Invokes an activity that displays the actual data in the **long-clicked** Table.
+- This displays a grid of the data, with vertical rows of data and rows horizontally.
+- The SQLite TYPE for each cell is indicated by it's colour according to the legend displayed above the data grid.
+- The grid can be scrolled both vertically and hoizontally (by rows and columns).
+- Up to 15 columns can be displayed, each column has a heading that shows the column's name.
+- Data is shown according to the retrieval via the type's preferred retrieval method i.e.
+  - **TEXT** (String) types are retrieved using the `getString` method.
+  - **INTEGER** types are retrieved using the `getLong` method.
+  - **REAL**/**NUMERIC** types are retrieved using the `getDouble` method.
+  - **BLOB** types are retrieved using the `getBlob` method, but are then converted to a hexadecimal representation of the first 24 bytes, so will display up to 48 characeters (24 by default, see setBytesToShowInBlob method to change).
+  - If the type cannot be ascertained then it will be shown as an Unknown type.
+  -
 
 
-### Example Screens
+### Example Screens (default colours)
 
 #### 1. Initial Display with:-
 
 Databases listed in the LeftView, Tables, initially for the first Database, listed in the RightView and Database information (scrolling can be used to traverse the extensive information available) in the LowerView :- 
 
-![Initial Display](https://user-images.githubusercontent.com/19511980/31858532-c611f862-b745-11e7-93ff-a1cd75b1fc27.JPG)
+![sqliteinformationassistant_initialview_v1](https://user-images.githubusercontent.com/19511980/32215329-ce02b656-be75-11e7-8101-855c3b2302a7.JPG)
 
 *Note! rather than show the tables in an empty database, the second database was selected before the screen shot was taken. P.S. an empty database will have the **android_metadata** table*
 
@@ -50,19 +63,22 @@ Databases listed in the LeftView, Tables, initially for the first Database, list
 
 When a Table in the RightView is clicked, the **LeftView** displays the **Tables**0 and the **RightView** displays the **Columns** for the selected table. Additionally, the **LowerView** displays the **Table's detailed information** as per
 
-![Table and Columns Display](https://user-images.githubusercontent.com/19511980/31858653-befcb3a2-b748-11e7-9708-e40a7ff47773.JPG)
+![sqliteinformationassistant_tablecolumnview_v1](https://user-images.githubusercontent.com/19511980/32215330-ce39835c-be75-11e7-8296-d4882710af31.JPG)
 
 #### 3. Tables and Columns with Column Information in the LowerView
 
 Clicking on a Column will display that's Column's detailed information (clicking a Table will show the Table's), as per
 
-![Table and Columns Display with Column Information](https://user-images.githubusercontent.com/19511980/31858687-b636cd88-b749-11e7-933c-f8c122dcf263.JPG)
+![sqliteinformationassistant_tablecolumnviewwithcolumninfo_v1](https://user-images.githubusercontent.com/19511980/32215328-cdcc0d0e-be75-11e7-8212-c9af50b360bd.JPG)
 
 ### Note!
 
 The **DATABASES** button appears in the latter two screenshots (i.e. the Tables and Columns Display), clicking this will return to the Databases and Tables display.
 
 ----
-#### More to come --
+#### 4. Table Data View
+
+![sqliteinformationassistant_tabledataviewer_v1](https://user-images.githubusercontent.com/19511980/32215600-83d32a1a-be76-11e7-96d5-0a775492efcd.JPG)
+
 
 
